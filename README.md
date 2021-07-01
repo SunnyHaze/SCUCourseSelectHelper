@@ -67,6 +67,8 @@ pip install muggle_ocr
 
 # 使用方法
 
+每个新学期使用，请务必在`config.py`文件中修改学期号，即修改`selectcourse_xueqi`变量！！！
+
 配置`config.txt`文件，然后按要求输入即可
 
 ![](https://a2u13-pic.oss-accelerate.aliyuncs.com/pic/20200611233420.png)
