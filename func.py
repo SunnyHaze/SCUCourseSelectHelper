@@ -169,7 +169,20 @@ def queryTeacherJL(session, kch, kxh):
         return None
 
 
+def isSelectTime() -> bool:
+    Now = str(datetime.now().time()).split('.')[0]
+    Now_time = datetime.strptime(Now)
+    toSelect_0 = datetime.strptime(selectTime[0])
+    toSelect_1 = datetime.strptime(selectTime[1])
+    return (toSelect_1-toSelect_0).seconds > 0 \
+        and (Now_time-toSelect_0).seconds > 0  \
+        and (toSelect_1-Now_time).seconds > 0
+
+
 def main(session):
+    if not isSelectTime():
+        print("当前在非设置选课时间")
+        return
     while True:
         # 下载验证码
         try:

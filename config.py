@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from datetime import *
 import hashlib
 
 captcha_url = "http://zhjw.scu.edu.cn/img/captcha.jpg"  # 验证码地址
@@ -30,3 +31,20 @@ courseNames = info[2].strip('\n').split(';')
 courseNums = info[3].strip('\n').split(';')
 # 课序号
 coursekxhNums = info[4].strip('\n').split(';')
+# def getStrDate(deli): return str(datetime.now().date()).replace('-', deli)
+
+
+def secondAppend(time_str, s):
+    cnt = time_str.count(':')
+    if cnt == 1:  # %H:%M
+        time_str += ":"+str(s)  # %H:%M:%S
+    if cnt > 2:
+        raise "时间格式为: %H:%M 或者 %H:%M:%S"
+    return time_str
+
+
+# 只检查格式
+# 起止时间
+selectTime = info[5].strip('\n').split(' ')
+selectTime[0] = secondAppend(selectTime[0], 59)
+selectTime[1] = secondAppend(selectTime[1], 0)
