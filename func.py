@@ -180,9 +180,9 @@ def isSelectTime() -> bool:
 
 
 def main(session):
-    if not isSelectTime():
-        print("当前在非设置选课时间")
-        return
+    while not isSelectTime():
+        print("当前时间:"+str(datetime.now().time()).split('.')[0]+" 在非设置选课时间")
+        time.sleep(60)  # sleep 1 min
     while True:
         # 下载验证码
         try:
