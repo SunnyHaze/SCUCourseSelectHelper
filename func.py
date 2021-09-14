@@ -62,31 +62,32 @@ def login(session):
             print("def login() 出现问题:" + str(e))
             return None
 
-def getAleadyCourse(session):
-    aleady_select_course_list = []
+
+def getAlreadyCourse(session):
+    already_select_course_list = []
     try:
         response = session.get(
-            url=aleady_select_course_url, headers=header).text
+            url=already_select_course_url, headers=header).text
         for each in json.loads(response)['xkxx'][0]:
-            aleady_select_course_list.append(json.loads(
+            already_select_course_list.append(json.loads(
                 response)['xkxx'][0][each]['courseName'])
-        return aleady_select_course_list
+        return already_select_course_list
     except Exception as e:
-        print("def getAleadyCourse() 出现问题:" + str(e))
+        print("def getAlreadyCourse() 出现问题:" + str(e))
         return None
 
 
-def courseSelect(session, each_course, aleadySelectCourse, courseName, courseNum, coursekxhNum):
-    if  courseName not in (course for course in aleadySelectCourse) and courseNum == \
+def courseSelect(session, each_course, alreadySelectCourse, courseName, courseNum, coursekxhNum):
+    if courseName not in (course for course in alreadySelectCourse) and courseNum == \
             each_course['kch'] and each_course['kxh'] in coursekxhNum.split():
-        
+
         if each_course['bkskyl'] <= 0:
             print("\033[0;33;40m" + "课程名:" + each_course['kcm'] + " 教师:" +
-            each_course['skjs'] + " 课余量:" + str(each_course['bkskyl']) + "\033[0m")
+                  each_course['skjs'] + " 课余量:" + str(each_course['bkskyl']) + "\033[0m")
         else:
             print("\033[0;32;40m" + "课程名:" + each_course['kcm'] + " 教师:" +
-                each_course['skjs'] + " 课余量:" + str(each_course['bkskyl']) + "\033[0m")
-            
+                  each_course['skjs'] + " 课余量:" + str(each_course['bkskyl']) + "\033[0m")
+
             kcm = each_course['kcm']  # 课程名
             kch = each_course['kch']  # 课程号
             kxh = each_course['kxh']  # 课序号
@@ -168,7 +169,20 @@ def queryTeacherJL(session, kch, kxh):
         return None
 
 
+def isSelectTime() -> bool:
+    Now = str(datetime.now().time()).split('.')[0]
+    Now_time = datetime.strptime(Now)
+    toSelect_0 = datetime.strptime(selectTime[0])
+    toSelect_1 = datetime.strptime(selectTime[1])
+    return (toSelect_1-toSelect_0).seconds > 0 \
+        and (Now_time-toSelect_0).seconds > 0  \
+        and (toSelect_1-Now_time).seconds > 0
+
+
 def main(session):
+    while not isSelectTime():
+        print("当前时间:"+str(datetime.now().time()).split('.')[0]+" 在非设置选课时间")
+        time.sleep(60)  # sleep 1 min
     while True:
         # 下载验证码
         try:
@@ -186,36 +200,38 @@ def main(session):
     while True:
         print("\n正在第{}轮选课！".format(clock))
         # 先查询已选课程
-        aleadySelectCourse = getAleadyCourse(session)
+        alreadySelectCourse = getAlreadyCourse(session)
         # 查询不到已选课程就重新查询
-        if aleadySelectCourse is None:
+        if alreadySelectCourse is None:
             continue
 
         select_course_idx = []
         for i in range(len(courseNames)):
-            if courseNames[i] in aleadySelectCourse:
+            if courseNames[i] in alreadySelectCourse:
                 select_course_idx.append(i)
-                print("\033[0;31;40m你已经选上了 %s ！\033[0m" %(courseNames[i]))
+                print("\033[0;31;40m你已经选上了 %s ！\033[0m" % (courseNames[i]))
         updateCourse(select_course_idx)
         if len(courseNames) == 0:
             print("\033[0;33;40m选课完成 ^.^\033[0m")
             exit()
-            
+
         for i in range(len(courseNames)):
-        # 然后查询要选课程的课余量
+            # 然后查询要选课程的课余量
             courseList = getFreeCourseList(session, courseNames[i])
             if courseList is None:
                 continue
             # 如果这门课没有被选择开始选课
             for each_course in courseList:
-                if courseSelect(session, each_course, aleadySelectCourse,\
-                    courseNames[i], courseNums[i], coursekxhNums[i]):
+                if courseSelect(session, each_course, alreadySelectCourse,
+                                courseNames[i], courseNums[i], coursekxhNums[i]):
                     break
             time.sleep(random.uniform(1.5, 3))
 
         clock = clock + 1
 
 # 更新课程情况，去除已经选择的课程
+
+
 def updateCourse(select_course_idx):
     if len(select_course_idx) == 0:
         return
@@ -225,14 +241,14 @@ def updateCourse(select_course_idx):
     new_courseNames = []
     new_courseNums = []
     new_coursekxhNums = []
-    
+
     for i in range(len(courseNames)):
         if i in select_course_idx:
             continue
         new_courseNames.append(courseNames[i])
         new_courseNums.append(courseNums[i])
         new_coursekxhNums.append(coursekxhNums[i])
-    
+
     courseNames = new_courseNames
     courseNums = new_courseNums
     coursekxhNums = new_coursekxhNums

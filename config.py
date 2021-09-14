@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+from datetime import *
 import hashlib
 
 captcha_url = "http://zhjw.scu.edu.cn/img/captcha.jpg"  # 验证码地址
@@ -7,7 +8,7 @@ login_url = "http://zhjw.scu.edu.cn/j_spring_security_check"  # 登录接口
 courseSelect_url = "http://zhjw.scu.edu.cn/student/courseSelect/courseSelect/index"  # tokenValue界面
 select_url = "http://zhjw.scu.edu.cn/student/courseSelect/selectCourse/checkInputCodeAndSubmit"  # 选课接口
 courseList_url = "http://zhjw.scu.edu.cn/student/courseSelect/freeCourse/courseList"  # 选课剩余查询地址
-aleady_select_course_url = "http://zhjw.scu.edu.cn/student/courseSelect/thisSemesterCurriculum/callback"  # 已选课程查询地址
+already_select_course_url = "http://zhjw.scu.edu.cn/student/courseSelect/thisSemesterCurriculum/callback"  # 已选课程查询地址
 queryTeacherJL_url = "http://zhjw.scu.edu.cn/student/courseSelect/queryTeacherJL"
 selectcourse_xueqi = "2021-2022-1-1"
 header = {
@@ -26,5 +27,24 @@ with open("config.txt", "r", encoding='utf-8') as f:
 j_username = info[0].strip('\n')
 j_password = hashlib.md5(info[1].strip('\n').encode()).hexdigest()
 courseNames = info[2].strip('\n').split(';')
+# 课程号
 courseNums = info[3].strip('\n').split(';')
+# 课序号
 coursekxhNums = info[4].strip('\n').split(';')
+# def getStrDate(deli): return str(datetime.now().date()).replace('-', deli)
+
+
+def secondAppend(time_str, s):
+    cnt = time_str.count(':')
+    if cnt == 1:  # %H:%M
+        time_str += ":"+str(s)  # %H:%M:%S
+    if cnt > 2:
+        raise "时间格式为: %H:%M 或者 %H:%M:%S"
+    return time_str
+
+
+# 只检查格式
+# 起止时间
+selectTime = info[5].strip('\n').split(' ')
+selectTime[0] = secondAppend(selectTime[0], 59)
+selectTime[1] = secondAppend(selectTime[1], 0)
