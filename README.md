@@ -66,10 +66,10 @@ pip install Pillow
 pip install requests
 pip install muggle_ocr
 ```
-
+>目前muggle_ocr已经无法通过官方pip安装，请通过豆瓣源安装 `pip install muggle_ocr -i https://pypi.douban.com/simple/`
 # 使用方法
 
-每个新学期使用，请务必在`config.py`文件中修改学期号，即修改`selectcourse_xueqi`变量！！！
+每个新学期使用，请务必在`config.py`文件中修改学期号，即修改`selectcourse_xueqi`变量！！！格式为`"2021-2022-1-1"`分为四段，前两段是学年，第三段是学期号，秋季为1，春季为2，最后一段无实际意义，保留为1即可。
 
 配置`config.txt`文件，然后按要求输入即可
 
