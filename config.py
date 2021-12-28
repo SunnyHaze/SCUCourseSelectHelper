@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from datetime import *
+import datetime as date
 import hashlib
 
 captcha_url = "http://zhjw.scu.edu.cn/img/captcha.jpg"  # 验证码地址
@@ -45,6 +45,9 @@ def secondAppend(time_str, s):
 
 # 只检查格式
 # 起止时间
-selectTime = info[5].strip('\n').split(' ')
-selectTime[0] = secondAppend(selectTime[0], 59)
-selectTime[1] = secondAppend(selectTime[1], 0)
+try:
+    selectTime = info[5].strip('\n').split(' ')
+    selectTime[0] = secondAppend(selectTime[0], 0)
+    selectTime[1] = secondAppend(selectTime[1], 59)
+except Exception:
+    print("请检查config.txt中是否在第五行以“9:30 21:59”添加了起止时间，中间以空格分隔")
