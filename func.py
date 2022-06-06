@@ -170,19 +170,13 @@ def queryTeacherJL(session, kch, kxh):
 
 
 def isSelectTime() -> bool:
-    Now = str(datetime.now().time()).split('.')[0]
-    Now_time = datetime.strptime(Now)
-    toSelect_0 = datetime.strptime(selectTime[0])
-    toSelect_1 = datetime.strptime(selectTime[1])
-    return (toSelect_1-toSelect_0).seconds > 0 \
-        and (Now_time-toSelect_0).seconds > 0  \
-        and (toSelect_1-Now_time).seconds > 0
-
+    Now = time.strftime("%H:%M:%S", time.localtime())
+    Now_time = date.datetime.strptime(Now,'%H:%M:%S')
+    toSelect_0 = date.datetime.strptime(selectTime[0],'%H:%M:%S')
+    toSelect_1 = date.datetime.strptime(selectTime[1],'%H:%M:%S')
+    return (Now_time>toSelect_0) and (Now_time < toSelect_1)
 
 def main(session):
-    while not isSelectTime():
-        print("当前时间:"+str(datetime.now().time()).split('.')[0]+" 在非设置选课时间")
-        time.sleep(60)  # sleep 1 min
     while True:
         # 下载验证码
         try:
@@ -193,6 +187,22 @@ def main(session):
         # 登录
         loginResponse = login(session)
         if loginResponse == "success":
+            # 控制选课开始时间
+            while not isSelectTime():
+                print("当前时间:"+str(date.datetime.now().time()).split('.')[0]+" 在非设置选课时间")
+                expireSeconds = date.datetime.strptime(selectTime[0],'%H:%M:%S') - date.datetime.strptime(time.strftime("%H:%M:%S", time.localtime()),'%H:%M:%S')
+                print("将在",expireSeconds,"后准时开始抢课！")
+                expireSeconds = expireSeconds.seconds
+                expireSeconds -= 10
+                startSecond = 11
+                if expireSeconds >= 0:
+                    time.sleep(expireSeconds)
+                else:
+                    startSecond = 11 + expireSeconds
+                for i in range(startSecond,0,-1):
+                    print(i-1)
+                    time.sleep(1)
+            print("\033[0;33;40m抢课开始！ *_*\033[0m")  
             break
         else:
             print("登陆失败！")
