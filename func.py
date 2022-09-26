@@ -9,12 +9,26 @@ from PIL import Image
 from config import *
 
 
+def getToken(session):
+    res = session.get(url=token_url, headers=header).content
+    print(res)
+    matchObj = re.findall(
+        r'<input type="hidden" id="tokenValue" name="tokenValue" value="(.*)">', res.decode())
+    if matchObj:
+        return matchObj[0]
+    else:
+        print("Token获取失败")
+        exit()
+
+
 def downloadCaptcha(session):
     with open("captcha.jpg", "wb") as f:
         f.write(session.get(url=captcha_url, headers=header).content)
 
 
 def login(session):
+    token = getToken(session)
+    print("your token is", token)
     cpaptcha_switch = input("是否尝试自动识别验证码?[y/n]")
     if cpaptcha_switch == 'y' or cpaptcha_switch == 'Y':
         import muggle_ocr
@@ -24,6 +38,7 @@ def login(session):
                 sdk = muggle_ocr.SDK(model_type=muggle_ocr.ModelType.Captcha)
                 text = sdk.predict(image_bytes=captcha_bytes)
                 login_data = {
+                    'tokenValue': token,
                     'j_username': j_username,
                     'j_password': j_password,
                     'j_captcha': text
@@ -46,6 +61,7 @@ def login(session):
         img = Image.open('captcha.jpg')
         img.show()
         login_data = {
+            'tokenValue': token,
             'j_username': j_username,
             'j_password': j_password,
             'j_captcha': input("请输入验证码:")
@@ -171,10 +187,11 @@ def queryTeacherJL(session, kch, kxh):
 
 def isSelectTime() -> bool:
     Now = time.strftime("%H:%M:%S", time.localtime())
-    Now_time = date.datetime.strptime(Now,'%H:%M:%S')
-    toSelect_0 = date.datetime.strptime(selectTime[0],'%H:%M:%S')
-    toSelect_1 = date.datetime.strptime(selectTime[1],'%H:%M:%S')
-    return (Now_time>toSelect_0) and (Now_time < toSelect_1)
+    Now_time = date.datetime.strptime(Now, '%H:%M:%S')
+    toSelect_0 = date.datetime.strptime(selectTime[0], '%H:%M:%S')
+    toSelect_1 = date.datetime.strptime(selectTime[1], '%H:%M:%S')
+    return (Now_time > toSelect_0) and (Now_time < toSelect_1)
+
 
 def main(session):
     while True:
@@ -189,9 +206,11 @@ def main(session):
         if loginResponse == "success":
             # 控制选课开始时间
             while not isSelectTime():
-                print("当前时间:"+str(date.datetime.now().time()).split('.')[0]+" 在非设置选课时间")
-                expireSeconds = date.datetime.strptime(selectTime[0],'%H:%M:%S') - date.datetime.strptime(time.strftime("%H:%M:%S", time.localtime()),'%H:%M:%S')
-                print("将在",expireSeconds,"后准时开始抢课！")
+                print("当前时间:"+str(date.datetime.now().time()
+                                  ).split('.')[0]+" 在非设置选课时间")
+                expireSeconds = date.datetime.strptime(selectTime[0], '%H:%M:%S') - date.datetime.strptime(
+                    time.strftime("%H:%M:%S", time.localtime()), '%H:%M:%S')
+                print("将在", expireSeconds, "后准时开始抢课！")
                 expireSeconds = expireSeconds.seconds
                 expireSeconds -= 10
                 startSecond = 11
@@ -199,10 +218,10 @@ def main(session):
                     time.sleep(expireSeconds)
                 else:
                     startSecond = 11 + expireSeconds
-                for i in range(startSecond,0,-1):
+                for i in range(startSecond, 0, -1):
                     print(i-1)
                     time.sleep(1)
-            print("\033[0;33;40m抢课开始！ *_*\033[0m")  
+            print("\033[0;33;40m抢课开始！ *_*\033[0m")
             break
         else:
             print("登陆失败！")

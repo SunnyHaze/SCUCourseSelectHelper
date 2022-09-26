@@ -3,6 +3,7 @@ import datetime as date
 import hashlib
 
 captcha_url = "http://zhjw.scu.edu.cn/img/captcha.jpg"  # 验证码地址
+token_url = "http://zhjw.scu.edu.cn/login" #token地址
 index_url = "http://zhjw.scu.edu.cn/"  # 主页地址
 login_url = "http://zhjw.scu.edu.cn/j_spring_security_check"  # 登录接口
 courseSelect_url = "http://zhjw.scu.edu.cn/student/courseSelect/courseSelect/index"  # tokenValue界面
