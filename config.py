@@ -11,7 +11,7 @@ select_url = "http://zhjw.scu.edu.cn/student/courseSelect/selectCourse/checkInpu
 courseList_url = "http://zhjw.scu.edu.cn/student/courseSelect/freeCourse/courseList"  # 选课剩余查询地址
 already_select_course_url = "http://zhjw.scu.edu.cn/student/courseSelect/thisSemesterCurriculum/callback"  # 已选课程查询地址
 queryTeacherJL_url = "http://zhjw.scu.edu.cn/student/courseSelect/queryTeacherJL"
-selectcourse_xueqi = "2021-2022-2-1"
+selectcourse_xueqi = "2022-2023-2-1"
 header = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
     'Accept-Encoding': 'gzip, deflate',

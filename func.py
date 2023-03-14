@@ -157,7 +157,7 @@ def getKcms(kms):
 
 def getFreeCourseList(session, courseName):
     list_data = {
-        'searchtj': courseName,
+        'kcm': courseName,
         'xq': 0,
         'jc': 0,
         'kclbdm': ""
@@ -165,7 +165,7 @@ def getFreeCourseList(session, courseName):
     try:
         response = session.post(
             url=courseList_url, headers=header, data=list_data).content.decode()
-        return ast.literal_eval(json.loads(response)['rwRxkZlList'])
+        return json.loads(response)['rwRxkZlList']
     except Exception as e:
         print("def getFreeCourseList() 出现问题:" + str(e))
         return None
